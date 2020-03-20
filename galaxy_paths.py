@@ -78,7 +78,7 @@ import matplotlib.font_manager
 rc('font',**{'family':'sans-serif','sans-serif':['Computer Modern Sans serif']})
 rc('text', usetex=True)
 
-#Pra plotar a distância entre as galáxias
+#To plot distance between galaxies
 if which_plot == 1:
     dist1 = np.array([np.linalg.norm(r1_1[:, i] - r2_1[:, i]) for i in range(71)])
     dist5 = np.array([np.linalg.norm(r1_5[:, i] - r2_5[:, i]) for i in range(71)])
@@ -122,7 +122,7 @@ if which_plot == 1:
     ax.legend(loc=1, fontsize=20, fancybox=True, framealpha=0.9, shadow=True)
     plt.show()
 
-#Pra plotar a trajetória das galáxias
+#To plot trajectory of galaxies
 if which_plot == 2:
     fig, axs = plt.subplots(1, 3, figsize=(20, 20))
 
