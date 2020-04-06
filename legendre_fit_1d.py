@@ -2,10 +2,8 @@ from scipy.optimize import curve_fit, minimize
 import numpy as np
 import matplotlib.pyplot as plt
 
-from potential_1d import Potential
-
-p = Potential()
-c, pot, x = p.pot1d(n_bins=10, smooth=2.0, width=2.0)
+c = np.linspace(1, 10, 1000)
+pot = -1 / c**2
 
 #Polinônio de Legrendre P7(x)
 def func(x, a, b, c, d):

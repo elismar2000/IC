@@ -208,14 +208,14 @@ if __name__ == '__main__':
 
     p = Potential()
 
-    t_path = "/home/elismar/Documentos/Fisica/IC/GalMer/inflow/Tabelas_GalMer/tables_arp142_v2"
-    snapshot = 10
+    t_path = '/home/elismar/Documentos/Fisica/IC/GalMer/inflow/Tabelas_GalMer/tables_arp245_orbit1'
+    snapshot = 1
     smooth = 1.3
     width = 1.0
-    n_bins = 5
+    n_bins = 10
     coords_min = p.pot3d(t_path, snapshot, n_bins=n_bins, smooth=smooth, width=width)
 
-    loop = 2
+    loop = False
 
     if loop == True:
         if coords_min.ndim == 1:
