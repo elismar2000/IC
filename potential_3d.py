@@ -2,9 +2,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from astropy.convolution import convolve, Gaussian2DKernel
 from astropy.table import Table
+from pygadgetreader import *
 from relative_minima import find_minima
 from scipy.optimize import minimize
 from scipy.interpolate import interp1d
+
 
 class Potential:
     def __init__(self):
@@ -17,20 +19,36 @@ class Potential:
         self.dy = 0.0
         self.dz = 0.0
 
-    def read_table(self, table_path, snapshot: str = None):
-        if snapshot != None:
-            t = Table.read(table_path, snapshot)
-            self.x = t['X']
-            self.y = t['Y']
-            self.z = t['Z']
-            self.mass = t['MASS']
+    def read_table(self, snapshot):
+        posgas = readsnap(snapshot, 'pos', 'gas')
+        xgas = posgas[:, 0]
+        ygas = posgas[:, 1]
+        zgas = posgas[:, 2]
 
-        if snapshot == None:
-            t = Table.read(table_path)
-            self.x = t['X']
-            self.y = t['Y']
-            self.z = t['Z']
-            self.mass = t['MASS']
+        poshalo = readsnap(snapshot, 'pos', 'dm')
+        xhalo = poshalo[:, 0]
+        yhalo = poshalo[:, 1]
+        zhalo = poshalo[:, 2]
+
+        posdisk = readsnap(snapshot, 'pos', 'disk')
+        xdisk = posdisk[:, 0]
+        ydisk = posdisk[:, 1]
+        zdisk = posdisk[:, 2]
+
+        posbulge = readsnap(snapshot, 'pos', 'bulge')
+        xbulge = posbulge[:, 0]
+        ybulge = posbulge[:, 1]
+        zbulge = posbulge[:, 2]
+
+        mgas = readsnap(snapshot, 'mass', 'gas')
+        mhalo = readsnap(snapshot, 'mass', 'dm')
+        mdisk = readsnap(snapshot, 'mass', 'disk')
+        mbulge = readsnap(snapshot, 'mass', 'bulge')
+
+        self.x = np.concatenate((xgas, xhalo, xdisk, xbulge))
+        self.y = np.concatenate((ygas, yhalo, ydisk, ybulge))
+        self.z = np.concatenate((zgas, zhalo, zdisk, zbulge))
+        self.mass = np.concatenate((mgas, mhalo, mdisk, mbulge))
 
 
     def evaluate_potential(self, n_bins: int = 10, smooth: float = 1.3):
@@ -80,7 +98,7 @@ class Potential:
 
             index_min = np.asarray(find_minima(p))
             mins = p[index_min[:, 0], index_min[:, 1], index_min[:, 2]]
-            print('mins: ', mins)
+
             i = np.where(mins < mins.min() / 1.5)
 
             j = []
@@ -91,17 +109,24 @@ class Potential:
                 coords_min = np.array([float(c[_][j[0][_]]) for _ in range(3)])
                 self.select(coords_min, width=width)
                 n_min = float(n[j[0]])
-                print('Still finding minima')
+                print('Just one minimum yet')
 
             if np.size(j, axis=0) == 2:
                 print('There was two minima')
-                dx, dy, dz = self.dx, self.dy, self.dz
+
                 coords_min1 = np.array([float(c[_][j[0][_]]) for _ in range(3)])
+                coords_min2 = np.array([float(c[_][j[1][_]]) for _ in range(3)])
+
+                dx, dy, dz = self.dx, self.dy, self.dz
                 coords_min1 = self.converge(coords_min1, t_path, snapshot, n_bins=n_bins, smooth=smooth, width=width)
 
                 self.dx, self.dy, self.dz = dx, dy, dz
-                coords_min2 = np.array([float(c[_][j[1][_]]) for _ in range(3)])
                 coords_min2 = self.converge(coords_min2, t_path, snapshot, n_bins=n_bins, smooth=smooth, width=width)
+
+                d_mins = np.sqrt(np.sum(np.square(coords_min1[_] - coords_min2[_]) for _ in range(3)))
+                print(d_mins)
+                if d_mins < 0.1:
+                    raise ValueError('This is much probably a double potential. Check it out.')
 
                 coords_min = np.array([coords_min1, coords_min2])
 
@@ -125,6 +150,7 @@ class Potential:
     def converge(self, coords_min, t_path, snapshot, n_bins: int = 10, smooth: float = 1.3, width: float = 1.5):
         self.read_table(t_path, snapshot)
         self.select(coords_min, width=width)
+
         n_min = 200.0
         while n_min > 100.0:
             p, c, n = self.evaluate_potential(n_bins=n_bins, smooth=smooth)
@@ -208,14 +234,16 @@ if __name__ == '__main__':
 
     p = Potential()
 
-    t_path = '/home/elismar/Documentos/Fisica/IC/GalMer/inflow/Tabelas_GalMer/tables_arp245_orbit1'
-    snapshot = 1
-    smooth = 1.3
-    width = 1.0
-    n_bins = 10
-    coords_min = p.pot3d(t_path, snapshot, n_bins=n_bins, smooth=smooth, width=width)
+    path = '/home/elismar/Documentos/Fisica/IC/Gadget2/Gadget-2.0.7/galaxy_collision_galmer_test/snapshot_000'
+    #snapshot = 29
+    #smooth = 1.3
+    #width = 1.5
+    #n_bins = 15
+    #coords_min = p.pot3d(path, n_bins=n_bins, smooth=smooth, width=width)
 
-    loop = False
+    p.read_table(path)
+
+    loop = 'foo'
 
     if loop == True:
         if coords_min.ndim == 1:
@@ -245,7 +273,7 @@ if __name__ == '__main__':
 
     if loop == False:
         from inflow import Inflow
-        i = Inflow(t_path, snapshot)
+        i = Inflow(t_path)
         i.read_table()
 
         fig, axs = plt.subplots(1, 3, figsize=(20, 20))

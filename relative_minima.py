@@ -6,7 +6,7 @@ from astropy.modeling import models
 from scipy.signal import argrelmin
 
 
-def find_minima(z: np.ndarray, mode: str = 'wrap'):
+def find_minima(z, mode):
     """
     Finds local minima in a N-dimensional array.
 
@@ -65,7 +65,7 @@ def test_3d():
     k = np.linspace(-10, 10, 20)
     x = np.array(np.meshgrid(k, k, k))
 
-    def gauss3d(radius: np.ndarray, sigma: float):
+    def gauss3d(radius, sigma):
         return np.exp(-radius ** 2 / (2 * (sigma ** 2)))
 
     image = np.zeros_like(x[0])
@@ -82,7 +82,7 @@ def test_3d():
     return image, minima_coordinates
 
 
-def test_2d(plot: bool = False):
+def test_2d(plot):
     k = np.linspace(-10, 10, 20)
     y, x = np.meshgrid(k, k)
 
@@ -108,7 +108,7 @@ def test_2d(plot: bool = False):
     return image, minima_coordinates
 
 
-def test_1d(plot: bool = False):
+def test_1d(plot):
     x = np.linspace(0, 10, 20)
     image = np.zeros_like(x)
 

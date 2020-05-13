@@ -9,10 +9,10 @@ fig, axs = plt.subplots(4, 3, figsize=(40, 40), sharey='row', sharex=True)
 
 f = 2.25e+9 #Fator da unidade do GalMer
 
-from matplotlib import rc
-import matplotlib.font_manager
-rc('font',**{'family':'sans-serif','sans-serif':['Computer Modern Sans serif']})
-rc('text', usetex=True)
+# from matplotlib import rc
+# import matplotlib.font_manager
+# rc('font',**{'family':'sans-serif','sans-serif':['Computer Modern Sans serif']})
+# rc('text', usetex=True)
 
 l = -1
 for i in [1, 5, 9]:
@@ -103,17 +103,17 @@ for i in [1, 5, 9]:
             axis_cmap = plt.get_cmap('plasma')
             axis_colors = [cmap(i) for i in np.linspace(0, 1, 7)]
             if j == 1.0:
-                axs[k, l].yaxis.label.set_color(axis_colors[0])
-                axs[k, l].set_ylabel(r'$r = 1.0 kpc$', fontsize=20)
+                axs[k, l].yaxis.label.set_color('black')
+                axs[k, l].set_ylabel(r'$1.0\ kpc$', fontsize=20)
             if j == 0.5:
-                axs[k, l].yaxis.label.set_color(axis_colors[3])
-                axs[k, l].set_ylabel(r'$r = 0.5 kpc$', fontsize=20)
+                axs[k, l].yaxis.label.set_color('black')
+                axs[k, l].set_ylabel(r'$0.5\ kpc$', fontsize=20)
             if j == 0.1:
-                axs[k, l].yaxis.label.set_color(axis_colors[1])
-                axs[k, l].set_ylabel(r'$r = 0.1 kpc$', fontsize=20)
+                axs[k, l].yaxis.label.set_color('black')
+                axs[k, l].set_ylabel(r'$0.1\ kpc$', fontsize=20)
             if j == 0.01:
-                axs[k, l].yaxis.label.set_color(axis_colors[2])
-                axs[k, l].set_ylabel(r'$r = 0.01 kpc$', fontsize=20)
+                axs[k, l].yaxis.label.set_color('black')
+                axs[k, l].set_ylabel(r'$0.01\ kpc$', fontsize=20)
 
         if j == 1.0:
             axs[k, l].xaxis.set_label_position('top')
@@ -121,13 +121,13 @@ for i in [1, 5, 9]:
             axis_colors = [cmap(i) for i in np.linspace(0, 1, 7)]
             if i == 1:
                 axs[k, l].xaxis.label.set_color(axis_colors[3])
-                axs[k, l].set_xlabel(r'$Orbit\ type\ 1$', fontsize=30)
+                axs[k, l].set_xlabel(r'$Orbit\ type\ 1$', fontsize=25)
             if i == 5:
                 axs[k, l].xaxis.label.set_color(axis_colors[4])
-                axs[k, l].set_xlabel(r'$Orbit\ type\ 5$', fontsize=30)
+                axs[k, l].set_xlabel(r'$Orbit\ type\ 5$', fontsize=25)
             if i == 9:
                 axs[k, l].xaxis.label.set_color(axis_colors[1])
-                axs[k, l].set_xlabel(r'$Orbit\ type\ 9$', fontsize=30)
+                axs[k, l].set_xlabel(r'$Orbit\ type\ 9$', fontsize=25)
 
         axs[k, l].legend(loc=0, fontsize=10, fancybox=False, framealpha=0.0)
         axs[k, l].tick_params(axis='both', which='both', tickdir='in', labelsize=25,
@@ -141,11 +141,11 @@ for i in [1, 5, 9]:
         axs[k, l].spines['top'].set_linewidth(1.5)
         axs[k, l].spines['right'].set_linewidth(1.5)
 
-axs[3, 1].set_xlabel(r'$Gyr$', fontsize=30)
+axs[3, 1].set_xlabel(r'$Gyr$', fontsize=23)
 
 plt.subplots_adjust(wspace=0, hspace=0)
 
 os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow')
 
-plt.savefig('gas_flux.pdf', dpi=0.1)
+plt.savefig('gas_flux.pdf')
 plt.show()

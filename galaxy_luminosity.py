@@ -36,7 +36,11 @@ for i in [1, 5, 9]:
             mdot2[j] = 0
 
     eff = 0.1
-    #Luminosidade vai ser em luminosidades solares.
+
+#o mdot é dado em massas solares / 50Myr, então os outros fatores ali do lado da expressão
+#são para deixar a unidade em luminosidades solares. No final, divide por 10^9 e tira o log pra deixar
+#em números mais agradáveis
+
     if i == 1:
         lum1_orbit1 = np.log10(mdot1 * cons.c**2 * eff * 2e+30 / (3.154e+7 * 3.829e+26) / 1e+9)
         lum2_orbit1 = np.log10(mdot2 * cons.c**2 * eff * 2e+30 / (3.154e+7 * 3.829e+26) / 1e+9)
@@ -48,6 +52,12 @@ for i in [1, 5, 9]:
     if i == 9:
         lum1_orbit9 =  np.log10(mdot1 * cons.c**2 * eff * 2e+30 / (3.154e+7 * 3.829e+26) / 1e+9)
         lum2_orbit9 =  np.log10(mdot2 * cons.c**2 * eff * 2e+30 / (3.154e+7 * 3.829e+26) / 1e+9)
+
+def mdot(lum):
+    return 10**lum * 3.154e+7 * 3.829e+26 / (cons.c**2 * eff * 2e+30 * 1e-9)
+
+print(mdot(1.97))
+print(mdot(1.27))
 
 flux_2992_xray = 4.820000e-11 #erg / s cm²
 d = 9.25703274e+25 #cm
@@ -61,10 +71,10 @@ colors = [cmap(i) for i in np.linspace(0, 1, 7)]
 axis_cmap = plt.get_cmap('rainbow')
 axis_colors = [cmap(i) for i in np.linspace(0, 1, 7)]
 
-from matplotlib import rc
-import matplotlib.font_manager
-rc('font',**{'family':'sans-serif','sans-serif':['Computer Modern Sans serif']})
-rc('text', usetex=True)
+# from matplotlib import rc
+# import matplotlib.font_manager
+# rc('font',**{'family':'sans-serif','sans-serif':['Computer Modern Sans serif']})
+# rc('text', usetex=True)
 
 time1 = np.arange(1, 17, 1)*0.05 #Gyr
 time5 = np.arange(1, 29, 1)*0.05 #Gyr
@@ -85,7 +95,7 @@ ax[0].minorticks_on()
 ax[0].set_ylabel(r'$log_{10}(10^{9}L_{\odot})$', fontsize=25)
 ax[0].xaxis.set_label_position('top')
 ax[0].xaxis.label.set_color(axis_colors[3])
-ax[0].set_xlabel(r'$Orbit\ type\ 1$', fontsize=35)
+ax[0].set_xlabel(r'$Orbit\ type\ 1$', fontsize=25)
 ax[0].legend(loc=4, fontsize=23, fancybox=True, framealpha=0.8, shadow=True)
 ax[0].set_ylim(-0.7, 2.4)
 ax[0].axvline(350e-3, color='b', linestyle='dashed', linewidth=2.0, alpha=0.6)
@@ -102,7 +112,7 @@ ax[1].tick_params(which='minor', tickdir='in', length=3, top=True, right=True)
 ax[1].tick_params(which='major', length=6)
 ax[1].minorticks_on()
 ax[1].set_xlabel(r'$Gyr$', fontsize=25)
-ax[1].set_title(r'$Orbit\ type\ 5$', fontsize=35, color=axis_colors[4])
+ax[1].set_title(r'$Orbit\ type\ 5$', fontsize=25, color=axis_colors[4])
 ax[1].set_ylim(-0.7, 2.4)
 ax[1].axvline(400e-3, color='b', linestyle='dashed', linewidth=2.0, alpha=0.6)
 ax[1].axvline(1250e-3, color='b', linestyle='dashed', linewidth=2.0, alpha=0.6)
@@ -120,7 +130,7 @@ ax[2].tick_params(which='major', length=6)
 ax[2].minorticks_on()
 ax[2].xaxis.set_label_position('top')
 ax[2].xaxis.label.set_color(axis_colors[1])
-ax[2].set_xlabel(r'$Orbit\ type\ 9$', fontsize=35)
+ax[2].set_xlabel(r'$Orbit\ type\ 9$', fontsize=25)
 ax[2].set_ylim(-0.7, 2.4)
 ax[2].axvline(450e-3, color='b', linestyle='dashed', linewidth=2.0, alpha=0.6)
 
