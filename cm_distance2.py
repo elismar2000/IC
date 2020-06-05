@@ -24,16 +24,9 @@ def distance(table_path, snapshot):
     distance = np.sqrt(np.sum(np.square(r_cm1 - r_cm2)))
     return distance
 
-#import pdb; pdb.set_trace()
-
 d = np.zeros(71)
 for i in range(1, 72):
     d[i - 1] = distance(table, i)
-
-# r_cm1, r_cm2 = np.array([])
-# for i in range(1, 72):
-#     r_cm1 = np.concatenate((r_cm1, r_cm(table, i, 1)))
-#     r_cm2 = np.concatenate((r_cm2, r_cm(table, i, 2)))
 
 time = np.arange(0, 71, 1) * 50.0 #Myr
 
