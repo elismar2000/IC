@@ -4,12 +4,14 @@ import numpy as np
 from pygadgetreader import *
 from tables import *
 
-class Inflow:
+class SFR:
     def __init__(self, table_mins, path_snapshot):
         self.table_mins = table_mins
         self.path = path_snapshot
         self.snapshot = str()
+        self.previous_snapshot = str()
         self.snap_path = str()
+        self.previous_snap_path = str()
         self.xmin1 = np.array([])
         self.ymin1 = np.array([])
         self.zmin1 = np.array([])
@@ -22,9 +24,9 @@ class Inflow:
         self.two_mins = True
         self.pos = np.array([])
         self.masses = np.array([])
-        self.gm1 = np.array([])
-        self.gm2 = np.array([])
-        self.gm = np.array([])
+        self.sm1 = np.array([])
+        self.sm2 = np.array([])
+        self.sm = np.array([])
         self.n1 = np.array([])
         self.n2 = np.array([])
         self.n = np.array([])
@@ -63,11 +65,29 @@ class Inflow:
 
     def read_snapshots(self):
         '''
-        Read positions of gas paticles and their masses for
-        each snapshot
+        Read positions of star paticles and their masses for
+        each snapshot. To compute the masses of stars formed
+        only during the last 50Myr, we have to mask all the star
+        particles formed until the last snapshot
         '''
-        self.pos = readsnap(self.snap_path, 'pos', 'gas')
-        self.masses = readsnap(self.snap_path, 'mass', 'gas')
+
+        if self.previous_snapshot == '0000':
+            previous_ids = np.array([])
+
+        else:
+            previous_ids = readsnap(self.previous_snap_path, 'pid', 'star')
+
+        current_ids = readsnap(self.snap_path, 'pid', 'star')
+
+        new_born = np.isin(current_ids, previous_ids)
+
+        mask = new_born == False
+
+        masses = readsnap(self.snap_path, 'mass', 'star')
+        pos = readsnap(self.snap_path, 'pos', 'star')
+
+        self.masses = masses[mask]
+        self.pos = pos[mask]
 
 
     def _distances(self, pos, min):
@@ -78,13 +98,16 @@ class Inflow:
         return dist[0]
 
 
-    def inflow(self, radius, snapshot):
+    def sfr(self, radius, snapshot):
         '''
         Calculates the mass of gas inside a given radius from
         the potential minima of each galaxy for each snapshot
         '''
         self.snapshot = '%04d' % (snapshot,)
+        self.previous_snapshot = '%04d' % (snapshot - 1,)
+
         self.snap_path = self.path + self.snapshot
+        self.previous_snap_path = self.path + self.previous_snapshot
 
         self.read_snapshots()
         self.coords_min(snapshot)
@@ -102,14 +125,14 @@ class Inflow:
             mask1 = dist1 < radius
             mask2 = dist2 < radius
 
-            self.gm1 = np.sum(self.masses[mask1])
-            self.gm2 = np.sum(self.masses[mask2])
+            self.sm1 = np.sum(self.masses[mask1])
+            self.sm2 = np.sum(self.masses[mask2])
 
             self.n1 = sum(mask1)
             self.n2 = sum(mask2)
 
-            print("gas mass inside radius %g" %radius, "Kpc from coords_min1 = %g" %self.gm1)
-            print("gas mass inside radius %g" %radius, "Kpc from coords_min2 = %g" %self.gm2)
+            print("mass of formed stars inside radius %g" %radius, "Kpc from coords_min1 = %g" %self.sm1)
+            print("mass of formed stars inside radius %g" %radius, "Kpc from coords_min2 = %g" %self.sm2)
 
         else:
             coords_min = np.array([self.xmin, self.ymin, self.zmin])
@@ -119,21 +142,24 @@ class Inflow:
 
             mask = dist < radius
 
-            self.gm = np.sum(self.masses[mask])
+            self.sm = np.sum(self.masses[mask])
 
             self.n = sum(mask)
 
-            print("gas mass inside radius %g" %radius, "Kpc from coords_min = %g" %self.gm)
+            print("mass of formed stars inside radius %g" %radius, "Kpc from coords_min = %g" %self.sm)
 
 
-    def save_table_inflow(self, num_of_snaps):
+    def save_table_sfr(self, num_of_snaps):
         '''
-        Write and save a hdf5 table with data from inflow
+        Write and save a hdf5 table with data from sfr
+        The iteration must start from the second snapshot,
+        i.e., snapshot_0001, due to the fact that the first snapshot
+        have no stars yet formed.
         '''
         class Table(IsDescription):
             '''
             Class describing attributes for table in which to save
-            inflow data
+            sfr data
             '''
             snapshot = Int32Col()
             gal1_r10 = Float32Col()
@@ -149,73 +175,73 @@ class Inflow:
             gal_r01 = Float32Col()
             gal_r001 = Float32Col()
 
-        h5file = open_file('galmer-like_sim_inflow.h5', mode='w', title='Inflow table')
-        group = h5file.create_group("/", 'inflow', 'Inflow of Gas')
+        h5file = open_file('galmer-like_sim_sfr.h5', mode='w', title='SFR table')
+        group = h5file.create_group("/", 'sfr', 'Star formation rate')
         table = h5file.create_table(group, 'readout', Table, 'Readout table')
-        inflow = table.row
+        sfr = table.row
 
-        for snapshot in range(0, num_of_snaps, 1):
-            inflow['snapshot'] = snapshot
+        for snapshot in range(1, num_of_snaps, 1):
+            sfr['snapshot'] = snapshot
             print("This is snapshot ", snapshot)
 
             for radius in [1.0, 0.5, 0.1, 0.01]:
-                self.inflow(radius, snapshot)
-                print("Calculating inflow for radius ", radius, "Kpc")
+                self.sfr(radius, snapshot)
+                print("Calculating sfr for radius ", radius, "Kpc")
 
                 if self.two_mins:
                     if radius == 1.0:
-                        inflow['gal1_r10'] = self.gm1
-                        inflow['gal2_r10'] = self.gm2
-                        inflow['gal_r10'] = np.nan
+                        sfr['gal1_r10'] = self.sm1
+                        sfr['gal2_r10'] = self.sm2
+                        sfr['gal_r10'] = np.nan
 
                     if radius == 0.5:
-                        inflow['gal1_r05'] = self.gm1
-                        inflow['gal2_r05'] = self.gm2
-                        inflow['gal_r05'] = np.nan
+                        sfr['gal1_r05'] = self.sm1
+                        sfr['gal2_r05'] = self.sm2
+                        sfr['gal_r05'] = np.nan
 
                     if radius == 0.1:
-                        inflow['gal1_r01'] = self.gm1
-                        inflow['gal2_r01'] = self.gm2
-                        inflow['gal_r01'] = np.nan
+                        sfr['gal1_r01'] = self.sm1
+                        sfr['gal2_r01'] = self.sm2
+                        sfr['gal_r01'] = np.nan
 
                     if radius == 0.01:
-                        inflow['gal1_r001'] = self.gm1
-                        inflow['gal2_r001'] = self.gm2
-                        inflow['gal_r001'] = np.nan
+                        sfr['gal1_r001'] = self.sm1
+                        sfr['gal2_r001'] = self.sm2
+                        sfr['gal_r001'] = np.nan
 
                 else:
                     if radius == 1.0:
-                        inflow['gal1_r10'] = np.nan
-                        inflow['gal2_r10'] = np.nan
-                        inflow['gal_r10'] = self.gm
+                        sfr['gal1_r10'] = np.nan
+                        sfr['gal2_r10'] = np.nan
+                        sfr['gal_r10'] = self.sm
 
                     if radius == 0.5:
-                        inflow['gal1_r05'] = np.nan
-                        inflow['gal2_r05'] = np.nan
-                        inflow['gal_r05'] = self.gm
+                        sfr['gal1_r05'] = np.nan
+                        sfr['gal2_r05'] = np.nan
+                        sfr['gal_r05'] = self.sm
 
                     if radius == 0.1:
-                        inflow['gal1_r01'] = np.nan
-                        inflow['gal2_r01'] = np.nan
-                        inflow['gal_r01'] = self.gm
+                        sfr['gal1_r01'] = np.nan
+                        sfr['gal2_r01'] = np.nan
+                        sfr['gal_r01'] = self.sm
 
                     if radius == 0.01:
-                        inflow['gal1_r001'] = np.nan
-                        inflow['gal2_r001'] = np.nan
-                        inflow['gal_r001'] = self.gm
+                        sfr['gal1_r001'] = np.nan
+                        sfr['gal2_r001'] = np.nan
+                        sfr['gal_r001'] = self.sm
 
-            inflow.append()
+            sfr.append()
         table.flush()
 
 
     def save_table_number(self, num_of_snaps):
         '''
-        Write and save a hdf5 table with data from inflow
+        Write and save a hdf5 table with data from part_num
         '''
         class Table(IsDescription):
             '''
             Class describing attributes for table in which to save
-            inflow data
+            part_num data
             '''
             snapshot = Int32Col()
             gal1_r10 = Float32Col()
@@ -294,5 +320,5 @@ if __name__ == '__main__':
     table_mins = '/home/elismar/Documentos/Fisica/IC/GalMer/inflow/mins_Gadget/galmer-like_sim_test2_minima.h5'
     path_snapshot = '/home/elismar/Documentos/Fisica/IC/Gadget3/simulation_galmer-like_test2/snapshot_'
 
-    i = Inflow(table_mins, path_snapshot)
-    i.save_table_number(num_of_snaps=71)
+    s = SFR(table_mins, path_snapshot)
+    s.save_table_sfr(num_of_snaps=71)

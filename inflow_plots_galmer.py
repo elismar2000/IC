@@ -20,19 +20,19 @@ for i in [1, 5, 9]:
     k = -1
     for j in [1.0, 0.5, 0.1, 0.01]:
         k += 1
-        #v = 4/3 * np.pi * j**3
 
         if (i == 1) | (i == 5):
-            os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow/inflow_outputs')
+            os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow/inflow_outputs_galmer')
             gm1 = np.load('m_gm1.orbit' + str(i) + '.min_radius' + str(j) + '.npy')
             gm2 = np.load('m_gm2.orbit' + str(i) + '.min_radius' + str(j) + '.npy')
             gm = np.load('m_gm.orbit' + str(i) + '.min_radius' + str(j) + '.npy')
 
-            os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow/part_num_outputs')
+            os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow/part_num_outputs_galmer')
             n1 = np.load('n1.orbit' + str(i) + '.min_radius' + str(j) + '.npy')
             n2 = np.load('n2.orbit' + str(i) + '.min_radius' + str(j) + '.npy')
             n = np.load('n.orbit' + str(i) + '.min_radius' + str(j) + '.npy')
 
+            #50e+6 is a factor to let the flux in units of solar mass / year
             flux1 = np.diff(gm1) / 50e+6
             flux2 = np.diff(gm2) / 50e+6
             flux = np.concatenate(([gm[0] - (gm1[-1] + gm2[-1])], np.diff(gm))) / 50e+6
@@ -42,11 +42,11 @@ for i in [1, 5, 9]:
             err = (np.sqrt(n) * gm / n) / 50e+6
 
         if (i == 9):
-            os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow/inflow_outputs')
+            os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow/inflow_outputs_galmer')
             gm1 = np.load('m_gm1.orbit' + str(i) + '.min_radius' + str(j) + '.npy')
             gm2 = np.load('m_gm2.orbit' + str(i) + '.min_radius' + str(j) + '.npy')
 
-            os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow/part_num_outputs')
+            os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow/part_num_outputs_galmer')
             n1 = np.load('n1.orbit' + str(i) + '.min_radius' + str(j) + '.npy')
             n2 = np.load('n2.orbit' + str(i) + '.min_radius' + str(j) + '.npy')
 
