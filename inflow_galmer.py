@@ -1,8 +1,8 @@
 from astropy.table import Table, Column
 import numpy as np
 import matplotlib.pyplot as plt
-from potential_3d import Potential
 import pickle
+
 import os
 
 class Inflow:
@@ -141,66 +141,65 @@ if __name__ == '__main__':
     snapshot = 10
     i = Inflow(t_path, snapshot)
     i.read_table()
-    plt.plot(i.x, i.y, ',')
-    plt.show()
-    # mode = 'part_num'
-    #
-    # for orbit in [1, 5, 9]:
-    #     if orbit == 1:
-    #         merge = 17
-    #     if orbit == 5:
-    #         merge = 29
-    #     if orbit == 9:
-    #         merge = 71
-    #
-    #     print('orbit = ', orbit)
-    #     print('merge = ', merge)
-    #
-    #     t_path = '/home/elismar/Documentos/Fisica/IC/GalMer/inflow/Tabelas_GalMer/tables_arp245_orbit' + str(orbit)
-    #
-    #     for min_radius in [1.0, 0.5, 0.1, 0.01]:
-    #         os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow')
-    #         print('min_radius = ', min_radius)
-    #
-    #         if mode == 'part_num':
-    #             n1 = np.zeros(merge)
-    #             n2 = np.zeros(merge)
-    #             n = np.zeros(71 - merge)
-    #
-    #             for snapshot in range(1, 71):
-    #                 i = Inflow(t_path, snapshot)
-    #                 print('snapshot: ', snapshot)
-    #                 if snapshot <= merge:
-    #                     n1[snapshot - 1] = i.gas_particles(min_radius=min_radius, orbit=orbit, which_min=1)
-    #                     n2[snapshot - 1] = i.gas_particles(min_radius=min_radius, orbit=orbit, which_min=2)
-    #                 if snapshot > merge:
-    #                     n[snapshot - merge - 1] = i.gas_particles(min_radius=min_radius, orbit=orbit, which_min=3)
-    #
-    #             dir = '/home/elismar/Documentos/Fisica/IC/GalMer/inflow/part_num_outputs'
-    #             os.chdir(dir)
-    #             np.save('n1.orbit' + str(orbit) + '.min_radius' + str(min_radius), n1)
-    #             np.save('n2.orbit' + str(orbit) + '.min_radius' + str(min_radius), n2)
-    #             np.save('n.orbit' + str(orbit) + '.min_radius' + str(min_radius), n)
-    #
-    #
-    #         if mode == 'inflow':
-    #             m_gm1 = np.zeros(merge)
-    #             m_gm2 = np.zeros(merge)
-    #             m_gm = np.zeros(71 - merge)
-    #
-    #             for snapshot in range(1, 72):
-    #                 i = Inflow(t_path, snapshot)
-    #                 print('snapshot: ', snapshot)
-    #                 if snapshot <= merge:
-    #                     m_gm1[snapshot - 1] = i.mass(p_type=0, orbit=orbit, which_min=1, min_radius=min_radius)
-    #                     m_gm2[snapshot - 1] = i.mass(p_type=0, orbit=orbit, which_min=2, min_radius=min_radius)
-    #                 if snapshot > merge:
-    #                     m_gm[snapshot - merge - 1] = i.mass(p_type=0, orbit=orbit, which_min=3, min_radius=min_radius)
-    #
-    #             dir = '/home/elismar/Documentos/Fisica/IC/GalMer/inflow/inflow_outputs'
-    #             os.chdir(dir)
-    #             np.save('m_gm1.orbit' + str(orbit) + '.min_radius' + str(min_radius), m_gm1)
-    #             np.save('m_gm2.orbit' + str(orbit) + '.min_radius' + str(min_radius), m_gm2)
-    #             np.save('m_gm.orbit' + str(orbit) + '.min_radius' + str(min_radius), m_gm)
-    #
-    # os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow')
+
+    mode = 'part_num'
+
+    for orbit in [1, 5, 9]:
+        if orbit == 1:
+            merge = 17
+        if orbit == 5:
+            merge = 29
+        if orbit == 9:
+            merge = 71
+
+        print('orbit = ', orbit)
+        print('merge = ', merge)
+
+        t_path = '/home/elismar/Documentos/Fisica/IC/GalMer/inflow/Tabelas_GalMer/tables_arp245_orbit' + str(orbit)
+
+        for min_radius in [1.0, 0.5, 0.1, 0.01]:
+            os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow')
+            print('min_radius = ', min_radius)
+
+            if mode == 'part_num':
+                n1 = np.zeros(merge)
+                n2 = np.zeros(merge)
+                n = np.zeros(71 - merge)
+
+                for snapshot in range(1, 71):
+                    i = Inflow(t_path, snapshot)
+                    print('snapshot: ', snapshot)
+                    if snapshot <= merge:
+                        n1[snapshot - 1] = i.gas_particles(min_radius=min_radius, orbit=orbit, which_min=1)
+                        n2[snapshot - 1] = i.gas_particles(min_radius=min_radius, orbit=orbit, which_min=2)
+                    if snapshot > merge:
+                        n[snapshot - merge - 1] = i.gas_particles(min_radius=min_radius, orbit=orbit, which_min=3)
+
+                dir = '/home/elismar/Documentos/Fisica/IC/GalMer/inflow/part_num_outputs'
+                os.chdir(dir)
+                np.save('n1.orbit' + str(orbit) + '.min_radius' + str(min_radius), n1)
+                np.save('n2.orbit' + str(orbit) + '.min_radius' + str(min_radius), n2)
+                np.save('n.orbit' + str(orbit) + '.min_radius' + str(min_radius), n)
+
+
+            if mode == 'inflow':
+                m_gm1 = np.zeros(merge)
+                m_gm2 = np.zeros(merge)
+                m_gm = np.zeros(71 - merge)
+
+                for snapshot in range(1, 72):
+                    i = Inflow(t_path, snapshot)
+                    print('snapshot: ', snapshot)
+                    if snapshot <= merge:
+                        m_gm1[snapshot - 1] = i.mass(p_type=0, orbit=orbit, which_min=1, min_radius=min_radius)
+                        m_gm2[snapshot - 1] = i.mass(p_type=0, orbit=orbit, which_min=2, min_radius=min_radius)
+                    if snapshot > merge:
+                        m_gm[snapshot - merge - 1] = i.mass(p_type=0, orbit=orbit, which_min=3, min_radius=min_radius)
+
+                dir = '/home/elismar/Documentos/Fisica/IC/GalMer/inflow/inflow_outputs'
+                os.chdir(dir)
+                np.save('m_gm1.orbit' + str(orbit) + '.min_radius' + str(min_radius), m_gm1)
+                np.save('m_gm2.orbit' + str(orbit) + '.min_radius' + str(min_radius), m_gm2)
+                np.save('m_gm.orbit' + str(orbit) + '.min_radius' + str(min_radius), m_gm)
+
+    os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow')
