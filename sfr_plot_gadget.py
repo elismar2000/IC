@@ -124,6 +124,7 @@ axs[3].ticklabel_format(axis='y', style='sci', scilimits=(0, 0))
 axs[3].minorticks_on()
 
 axs[3].set_ylabel(r'$SFR\ [\frac{M\odot}{yr}]$', fontsize=12)
+axs[3].set_xlabel(r'$Time\ [Gyr]$', fontsize=15)
 
 #============================
 

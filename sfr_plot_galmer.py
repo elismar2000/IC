@@ -16,7 +16,7 @@ sfr_table = sfr_h5file.root.sfr.readout
 #Plotting
 #===========================
 
-cmap = plt.get_cmap('plasma')
+cmap = plt.get_cmap('twilight')
 colors = [cmap(i) for i in np.linspace(0, 1, 7)]
 
 fig, axs = plt.subplots(4, 1, figsize=(40, 40), sharey=False, sharex=True)
@@ -124,6 +124,7 @@ axs[3].ticklabel_format(axis='y', style='sci', scilimits=(0, 0))
 axs[3].minorticks_on()
 
 axs[3].set_ylabel(r'$SFR\ [\frac{M\odot}{yr}]$', fontsize=12)
+axs[3].set_xlabel(r'$Time\ [Gyr]$', fontsize=15)
 
 #============================
 

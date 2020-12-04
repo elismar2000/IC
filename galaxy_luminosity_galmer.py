@@ -5,11 +5,11 @@ import os
 from astropy import units
 
 for i in [1, 5, 9]:
-    os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow/inflow_outputs')
+    os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow/inflow_outputs_galmer')
     gm1 = np.load('m_gm1.orbit' + str(i) + '.min_radius0.01.npy') * 2.25e+9
     gm2 = np.load('m_gm2.orbit' + str(i) + '.min_radius0.01.npy') * 2.25e+9
 
-    os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow/part_num_outputs')
+    os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow/part_num_outputs_galmer')
     n1 = np.load('n1.orbit' + str(i) + '.min_radius0.01.npy')
     n2 = np.load('n2.orbit' + str(i) + '.min_radius0.01.npy')
 
@@ -65,26 +65,19 @@ lum_2992_xray = 4 * np.pi * d**2 * flux_2992_xray #Lsu
 lum_2992_bol = 10**(0.0378 * (np.log10(lum_2992_xray))**2 - 2.03 * np.log10(lum_2992_xray) + 61.6)
 lum_2992_to_plot = np.log10(lum_2992_bol / (3.846e+33 * 1e+9))
 
-cmap = plt.get_cmap('gnuplot')
-colors = [cmap(i) for i in np.linspace(0, 1, 7)]
-
-axis_cmap = plt.get_cmap('rainbow')
-axis_colors = [cmap(i) for i in np.linspace(0, 1, 7)]
-
-# from matplotlib import rc
-# import matplotlib.font_manager
-# rc('font',**{'family':'sans-serif','sans-serif':['Computer Modern Sans serif']})
-# rc('text', usetex=True)
+#cmap = plt.get_cmap('twilight')
+#colors = [cmap(i) for i in np.linspace(0, 1, 7)]
+colors = ['darkorchid', 'navy']
 
 time1 = np.arange(1, 17, 1)*0.05 #Gyr
 time5 = np.arange(1, 29, 1)*0.05 #Gyr
 time9 = np.arange(1, 71, 1)*0.05 #Gyr
 
-fig, ax = plt.subplots(1, 3, figsize=(20, 20), sharey=True)
-ax[0].plot(time1, lum1_orbit1, 'X', color=colors[3], label=r'Galaxy 1')
-ax[0].plot(time1, lum2_orbit1, 'X', color=colors[1], label=r'Galaxy 2')
-ax[0].axhline(lum_2992_to_plot, color='k', linestyle='dashed', linewidth=2.0, alpha=0.6)
-ax[0].tick_params(axis='both', tickdir='in', length=10, labelsize=20, width=1.5, top=True, right=True)
+fig, ax = plt.subplots(1, 3, figsize=(24, 12), sharey=True, dpi=40)
+ax[0].plot(time1, lum1_orbit1, 'X', markersize=15, color=colors[0], label=r'Galaxy 1')
+ax[0].plot(time1, lum2_orbit1, 'X', markersize=15, color=colors[1], label=r'Galaxy 2')
+ax[0].axhline(lum_2992_to_plot, color='k', linestyle='dashed', linewidth=3.0, alpha=0.6)
+ax[0].tick_params(axis='both', tickdir='in', length=10, labelsize=25, width=1.5, top=True, right=True)
 ax[0].spines['bottom'].set_linewidth(1.5)
 ax[0].spines['left'].set_linewidth(1.5)
 ax[0].spines['top'].set_linewidth(1.5)
@@ -92,18 +85,18 @@ ax[0].spines['right'].set_linewidth(1.5)
 ax[0].tick_params(which='minor', tickdir='in', length=3, top=True, right=True)
 ax[0].tick_params(which='major', length=6)
 ax[0].minorticks_on()
-ax[0].set_ylabel(r'$log_{10}(10^{9}L_{\odot})$', fontsize=25)
+ax[0].set_ylabel(r'$log_{10}(10^{9}L_{\odot})$', fontsize=30)
 ax[0].xaxis.set_label_position('top')
-ax[0].xaxis.label.set_color(axis_colors[3])
-ax[0].set_xlabel(r'$Orbit\ type\ 1$', fontsize=25)
+ax[0].xaxis.label.set_color('black')
+ax[0].set_xlabel(r'$Orbit\ type\ 1$', fontsize=30)
 ax[0].legend(loc=4, fontsize=23, fancybox=True, framealpha=0.8, shadow=True)
 ax[0].set_ylim(-0.7, 2.4)
-ax[0].axvline(350e-3, color='b', linestyle='dashed', linewidth=2.0, alpha=0.6)
+ax[0].axvline(350e-3, color='b', linestyle='dashed', linewidth=3.0, alpha=0.6)
 
-ax[1].plot(time5, lum1_orbit5, 'X', color=colors[3])
-ax[1].plot(time5, lum2_orbit5, 'X', color=colors[1])
-ax[1].axhline(lum_2992_to_plot, color='k', linestyle='dashed', linewidth=2.0, alpha=0.6)
-ax[1].tick_params(axis='both', tickdir='in', length=10, labelsize=20, width=1.5, top=True, right=True)
+ax[1].plot(time5, lum1_orbit5, 'X', markersize=15, color=colors[0])
+ax[1].plot(time5, lum2_orbit5, 'X', markersize=15, color=colors[1])
+ax[1].axhline(lum_2992_to_plot, color='k', linestyle='dashed', linewidth=3.0, alpha=0.6)
+ax[1].tick_params(axis='both', tickdir='in', length=10, labelsize=25, width=1.5, top=True, right=True)
 ax[1].spines['bottom'].set_linewidth(1.5)
 ax[1].spines['left'].set_linewidth(1.5)
 ax[1].spines['top'].set_linewidth(1.5)
@@ -111,16 +104,16 @@ ax[1].spines['right'].set_linewidth(1.5)
 ax[1].tick_params(which='minor', tickdir='in', length=3, top=True, right=True)
 ax[1].tick_params(which='major', length=6)
 ax[1].minorticks_on()
-ax[1].set_xlabel(r'$Gyr$', fontsize=25)
-ax[1].set_title(r'$Orbit\ type\ 5$', fontsize=25, color=axis_colors[4])
+ax[1].set_xlabel(r'$Gyr$', fontsize=30)
+ax[1].set_title(r'$Orbit\ type\ 5$', fontsize=30, color='black')
 ax[1].set_ylim(-0.7, 2.4)
-ax[1].axvline(400e-3, color='b', linestyle='dashed', linewidth=2.0, alpha=0.6)
-ax[1].axvline(1250e-3, color='b', linestyle='dashed', linewidth=2.0, alpha=0.6)
+ax[1].axvline(400e-3, color='b', linestyle='dashed', linewidth=3.0, alpha=0.6)
+#ax[1].axvline(1250e-3, color='b', linestyle='dashed', linewidth=2.0, alpha=0.6)
 
-ax[2].plot(time9, lum1_orbit9, 'X', color=colors[3])
-ax[2].plot(time9, lum2_orbit9, 'X', color=colors[1])
-ax[2].axhline(lum_2992_to_plot, color='k', linestyle='dashed', linewidth=2.0, alpha=0.6)
-ax[2].tick_params(axis='both', tickdir='in', length=10, labelsize=20, width=1.5, top=True, right=True)
+ax[2].plot(time9, lum1_orbit9, 'X', markersize=15, color=colors[0])
+ax[2].plot(time9, lum2_orbit9, 'X', markersize=15, color=colors[1])
+ax[2].axhline(lum_2992_to_plot, color='k', linestyle='dashed', linewidth=3.0, alpha=0.6)
+ax[2].tick_params(axis='both', tickdir='in', length=10, labelsize=25, width=1.5, top=True, right=True)
 ax[2].spines['bottom'].set_linewidth(1.5)
 ax[2].spines['left'].set_linewidth(1.5)
 ax[2].spines['top'].set_linewidth(1.5)
@@ -129,13 +122,14 @@ ax[2].tick_params(which='minor', tickdir='in', length=3, top=True, right=True)
 ax[2].tick_params(which='major', length=6)
 ax[2].minorticks_on()
 ax[2].xaxis.set_label_position('top')
-ax[2].xaxis.label.set_color(axis_colors[1])
-ax[2].set_xlabel(r'$Orbit\ type\ 9$', fontsize=25)
+ax[2].xaxis.label.set_color('black')
+ax[2].set_xlabel(r'$Orbit\ type\ 9$', fontsize=30)
 ax[2].set_ylim(-0.7, 2.4)
-ax[2].axvline(450e-3, color='b', linestyle='dashed', linewidth=2.0, alpha=0.6)
+ax[2].axvline(450e-3, color='b', linestyle='dashed', linewidth=3.0, alpha=0.6)
 
 plt.subplots_adjust(wspace=0, hspace=0)
+os.chdir('/home/elismar/Documentos/Fisica/IC/figuras/RAS Poster')
+plt.savefig('luminosity_galmer.png')
 
-plt.show()
-
-os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow')
+os.chdir('/home/elismar/Documentos/Fisica/IC/GalMer/inflow/codes')
+#plt.show()
